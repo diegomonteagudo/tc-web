@@ -1,5 +1,14 @@
+.inputLabel{
+  margin-left: 100px;
+  width: 500px;
+}
+
+.Label{
+  margin-left: 100px;
+}
+
 .deleteTache{
-  margin-left: 20px
+  margin-left: 10px;
 }
 
 .panelStyle{
@@ -10,7 +19,11 @@
   text-decoration: line-through;
 }
 
-/* .circle:hover{
+.circle{
+  border-radius:10px
+}
+
+.circle:hover{
   background-color: #f50303; 
 }
 
@@ -22,14 +35,14 @@ li::marker{
   font-size:40px;
   vertical-align: bottom;
   margin-bottom: 500px;
-} */
+}
 
 .li-content{
   margin-left: -30px;
   font-size: 20px;
   vertical-align: middle;
   margin-bottom: 50px;
-}
+} */
 
 
 * {

@@ -2,6 +2,7 @@ import "./App.css";
 import "./styles.css";
 import { useState } from 'react';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+// import { Input, Button, Checkbox, Space } from 'antd';
 import { theme, Input, Button, Checkbox, Space, Collapse } from 'antd';
 
 
@@ -9,11 +10,10 @@ const { Panel } = Collapse;
 
 
 let tacheId = 0;
+// let i = 0;
 
 
-
-
-export default function TicTocToe(){
+export default function PageTache(){
 
   const { token } = theme.useToken();
   const panelStyle = {
@@ -22,9 +22,11 @@ export default function TicTocToe(){
   }
 
   const [input, setInput] = useState('');
-  const [taches, setTache] = useState([]);
+  const [inLabel, setInLabel] = useState('');
+  const [taches, setTaches] = useState([]);
   const [tachesFini, setFini] = useState([]);
-  
+
+  const [inputFunc, setInputFunc] = useState(''); //utilisé pour l'input pendant l'édition des labels
 
   function EnterButton(){
     if (input !== ''){
@@ -32,11 +34,17 @@ export default function TicTocToe(){
         <Button 
           type="primary" danger
           onClick={()=>{
-            setTache([
+            setTaches([
               ...taches,
-              { id: tacheId++, content: input}
+              { 
+                id: tacheId++, 
+                content: input, 
+                label: inLabel.split(','), 
+                editLabel: false
+              }
             ]);
             setInput('');
+            setInLabel('');
         }}>Add</Button>
       )
     }
@@ -44,8 +52,7 @@ export default function TicTocToe(){
   }
 
   function DeleteTache({list, a}){
-    const [List, setList] = (list===taches)?[taches, setTache]:[tachesFini, setFini]
-
+    const [List, setList] = (list===taches)?[taches, setTaches]:[tachesFini, setFini]
     return(
       <Button 
         className="deleteTache" icon={<DeleteOutlined />}
@@ -57,37 +64,25 @@ export default function TicTocToe(){
         }}
       />
     )
-
   }
 
-  function MoveAToB({list_a, list_b, Class=""}){
-    const [listA, setListA] = (list_a===taches)?[taches, setTache]:[tachesFini, setFini]
-    const [listB, setListB] = (list_b===taches)?[taches, setTache]:[tachesFini, setFini]
-  
-    return(
-      <Space direction="vertical">
-        {listA.map(a => (
-          <Checkbox
-            className = {Class}
-            key={a.id} 
-            onClick={()=>{
-              setListB([
-                ...listB,
-                { id: a.id, content: a.content}
-              ]);
-              setListA(
-                listA.filter(e =>
-                  e.id !== a.id
-                )
-              );
-            }}>
-              {a.content}
-              <DeleteTache list={list_a} a = {a}/>
-              </Checkbox>
-        ))}
-      </Space>
+  const MoveAToB = (list_a, list_b, element)=>{
+    const [listA, setListA] = (list_a===taches)?[taches, setTaches]:[tachesFini, setFini]
+    const [listB, setListB] = (list_b===taches)?[taches, setTaches]:[tachesFini, setFini]
+
+    setListB([
+      ...listB,
+      { id: element.id, content: element.content, label: element.label, editLabel: element.editLabel}
+    ])
+    setListA(
+      listA.filter(e =>
+        e.id !== element.id
+      )
     )
   }
+
+
+
 
   return(
     <>
@@ -97,18 +92,142 @@ export default function TicTocToe(){
         prefix={<EditOutlined />}
         onChange={e => setInput(e.target.value)}
       />
-      
+      <Input 
+        value={inLabel}
+        placeholder="Enter your LABEL here! (use ',' to seperate your labels)"
+        prefix={<EditOutlined />}
+        onChange={e => setInLabel(e.target.value)}
+      />
       <EnterButton />
       <br/>
+
       <Collapse defaultActiveKey={['1']}>
+        {/*panel pour "Things to do" */}
         <Panel header="Things to do: " key="1" style={panelStyle}>
-          <MoveAToB list_a={taches} list_b={tachesFini} />
+          <Space direction="vertical">
+            {taches.map(t => (
+              <Space>
+                <Checkbox
+                  key={t.id} 
+                  onClick={()=>MoveAToB(taches, tachesFini, t)}
+                >
+                  {t.content}
+                </Checkbox>
+
+                {/* button pour afficher les labels, clicker pour éditer */}
+                {!t.editLabel && 
+                  <button 
+                    className="Label"
+                    onClick={()=>{
+                      setInputFunc(t.label.join(","));
+                      setTaches(taches.map(e=>(
+                        e.id===t.id ? {...e, editLabel:true}:{...e, editLabel:false}
+                      )))
+                      setFini(tachesFini.map(e=>(
+                        {...e, editLabel:false}
+                      )))
+                    }}>
+                    <Space>
+                      {t.label.map(l=>(
+                        <div>
+                          [{l}]
+                        </div>
+                      ))}
+                    </Space>
+                  </button>}
+
+                {/* input pendant l'édition des labels */}
+                {t.editLabel && 
+                  <input
+                    placeholder="Edit your LABEL here!"
+                    className="inputLabel"
+                    value={inputFunc}
+                    onChange = {e => {setInputFunc(e.target.value)}}
+                  />}
+
+                {/* button de la confirmation */}
+                {t.editLabel && 
+                  <Button 
+                    onClick = {() => {setTaches(
+                      taches.map(e => (
+                        e.id===t.id ? {
+                          ...e, 
+                          label:inputFunc.split(","), 
+                          editLabel:false}:e
+                      )))
+                    }}
+                  >Confirm</Button>}
+
+                <DeleteTache list={taches} a = {t}/>
+              </Space>
+            ))}
+          </Space>
         </Panel>
 
+        {/*panel pour "Things have been done" */}
         <Panel header="Things have been done:" key="2" style={panelStyle}>
-          <MoveAToB list_a={tachesFini} list_b={taches} Class="TacheFini"/>
+          <Space direction="vertical">
+            {tachesFini.map(t => (
+              <Space>
+                <Checkbox
+                  className="TacheFini"
+                  key={t.id} 
+                  onClick={()=>MoveAToB(tachesFini, taches, t)}>
+                  {t.content}
+                </Checkbox>
+
+                  {/* button pour afficher les labels, clicker pour éditer */}
+                  {!t.editLabel && 
+                    <button 
+                      className="Label"
+                      onClick={()=>{
+                        setInputFunc(t.label.join(","));
+                        setFini(tachesFini.map(e=>(
+                          e.id===t.id ? {...e, editLabel:true}:{...e, editLabel:false}
+                        )))
+                        setTaches(taches.map(e=>(
+                          {...e, editLabel:false}
+                        )))
+                      }}>
+                      <Space>
+                        {t.label.map(l=>(
+                          <div>
+                            [{l}]
+                          </div>
+                        ))}
+                      </Space>
+                    </button>}
+
+                  {/* input pendant l'édition des labels */}
+                  {t.editLabel && 
+                    <input
+                      placeholder="Edit your LABEL here!"
+                      className="inputLabel"
+                      value={inputFunc}
+                      onChange = {e => {setInputFunc(e.target.value)}}
+                    />}
+
+                  {/* button de la confirmation */}
+                  {t.editLabel && 
+                    <Button 
+                      onClick = {() => {setFini(
+                        tachesFini.map(e => (
+                          e.id===t.id ? {
+                            ...e, 
+                            label:inputFunc.split(","), 
+                            editLabel:false}:e
+                        )))
+                      }}
+                    >Confirm</Button>}
+
+                  <DeleteTache list={tachesFini} a = {t}/>
+              </Space>
+            ))}
+          </Space>
         </Panel>
       </Collapse>
+
+      {/* <p>rander: {i++}</p> */}
     </>
   )
 
