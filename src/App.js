@@ -2,7 +2,6 @@ import "./App.css";
 import "./styles.css";
 import { useState } from 'react';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-// import { Input, Button, Checkbox, Space } from 'antd';
 import { theme, Input, Button, Checkbox, Space, Collapse } from 'antd';
 
 
