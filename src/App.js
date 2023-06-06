@@ -2,7 +2,7 @@ import "./App.css";
 import "./styles.css";
 import { useState } from 'react';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { theme, Input, Button, Checkbox, Space, Collapse } from 'antd';
+import { theme, Input, Button, Checkbox, Space, Collapse, Layout, Menu } from 'antd';
 
 
 const { Panel } = Collapse;
@@ -12,7 +12,7 @@ let tacheId = 0;
 // let i = 0;
 
 
-export default function PageTache(){
+function PageTache(){
 
   const { token } = theme.useToken();
   const panelStyle = {
@@ -231,4 +231,42 @@ export default function PageTache(){
   )
 
 
+}
+
+//sidebar pour la sélection du groupe
+function GroupSidebar(){
+  const [sidebarDisplayed, setSidebarDisplayed] = useState(true);
+  
+  // WARNING placeholders
+  const group2children = [
+    {key:"21", label:"Group21"},
+    {key:"22", label:"Group22"},
+    {key:"23", label:"Group23"}]
+  const groups = [
+    {key:"1", label:"Group1"},
+    {key:"2", label:"Group2", children:group2children},
+    {key:"3", label:"Group3"},
+    {key:"4", label:"Group4"}]
+
+  return(
+    <Menu theme="light" mode="inline" defaultSelectedKeys={['1']} items={groups} />
+  )
+}
+
+//component principal
+export default function TodoGlobal(){
+  const { Header, Content, Footer, Sider } = Layout;
+
+  return(
+    <Layout style={{ minHeight: "100vh" }}>
+      <Header><p style={{color:'red'}}>Header : Connexion et paramètres plus tard</p></Header>
+        <Layout>
+          <Sider>
+            <GroupSidebar/>
+          </Sider>
+          <Content><PageTache/></Content>
+        </Layout>
+      <Footer style={{ textAlign: 'center' }}>Projet WEB de Chijin GUI et Diego MONTEAGUDO</Footer>
+    </Layout>
+  )
 }
