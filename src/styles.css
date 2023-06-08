@@ -3,6 +3,10 @@
   width: 500px;
 }
 
+.EditInput{
+  width: 500px;
+  padding: 1px 5px;
+}
 .Label{
   margin-left: 100px;
 }

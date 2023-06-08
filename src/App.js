@@ -1,7 +1,7 @@
 import "./App.css";
 import "./styles.css";
 import { useState } from 'react';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, FormOutlined, DeleteOutlined } from '@ant-design/icons';
 import { theme, Input, Button, Checkbox, Space, Collapse, Layout, Menu } from 'antd';
 
 
@@ -14,6 +14,7 @@ let tacheId = 0;
 
 function PageTache(){
 
+
   const { token } = theme.useToken();
   const panelStyle = {
     background: "#f5f1f1fa",
@@ -25,7 +26,8 @@ function PageTache(){
   const [taches, setTaches] = useState([]);
   const [tachesFini, setFini] = useState([]);
 
-  const [inputFunc, setInputFunc] = useState(''); //utilisé pour l'input pendant l'édition des labels
+  const [inputLabel, setInputLabel] = useState(''); //utilisé pour l'input pendant l'édition des labels
+  const [inputTache, setInputTache] = useState(''); //utilisé pour l'input pendant l'édition des taches
 
   function EnterButton(){
     if (input !== ''){
@@ -80,7 +82,33 @@ function PageTache(){
     )
   }
 
+  function afficherLabels({t}){
+    return(
+      <div className = "Label">
+      <Space>
+        {t.label.map(l=>(
+          <div>
+            [{l}]
+          </div>
+        ))}
+      </Space>
+    </div>)
+  }
 
+  function clickEditButton(t, list){
+    const [list1, setList1] = (list===taches)?[taches, setTaches]:[tachesFini, setFini]
+    const [list2, setList2] = (list===tachesFini)?[taches, setTaches]:[tachesFini, setFini]
+
+    setInputTache(t.content);
+    setInputLabel(t.label.join(","));
+    setList1(list1.map(e=>(
+      e.id===t.id ? {...e, editLabel:true}:{...e, editLabel:false}
+    )))
+    setList2(list2.map(e=>(
+      {...e, editLabel:false}
+    )))
+    
+  }
 
 
   return(
@@ -99,6 +127,17 @@ function PageTache(){
       />
       <EnterButton />
       <br/>
+      {/* <Space wrap>
+        <Dropdown
+          menu={{
+            sortItem,
+          }}
+          placement="Sorted by: "
+        >
+          <Button>Sorted by: </Button>
+        </Dropdown>
+      </Space> */}
+      <br/>
 
       <Collapse defaultActiveKey={['1']}>
         {/*panel pour "Things to do" */}
@@ -110,52 +149,42 @@ function PageTache(){
                   key={t.id} 
                   onClick={()=>MoveAToB(taches, tachesFini, t)}
                 >
-                  {t.content}
+                  {!t.editLabel && t.content}
                 </Checkbox>
 
-                {/* button pour afficher les labels, clicker pour éditer */}
-                {!t.editLabel && 
-                  <button 
-                    className="Label"
-                    onClick={()=>{
-                      setInputFunc(t.label.join(","));
-                      setTaches(taches.map(e=>(
-                        e.id===t.id ? {...e, editLabel:true}:{...e, editLabel:false}
-                      )))
-                      setFini(tachesFini.map(e=>(
-                        {...e, editLabel:false}
-                      )))
-                    }}>
-                    <Space>
-                      {t.label.map(l=>(
-                        <div>
-                          [{l}]
-                        </div>
-                      ))}
-                    </Space>
-                  </button>}
+                {/* afficher les labels */}
+                {!t.editLabel && afficherLabels({t})}
 
-                {/* input pendant l'édition des labels */}
-                {t.editLabel && 
-                  <input
-                    placeholder="Edit your LABEL here!"
-                    className="inputLabel"
-                    value={inputFunc}
-                    onChange = {e => {setInputFunc(e.target.value)}}
-                  />}
+                {/* button pour éditer */}
+                {!t.editLabel && <Button 
+                  icon = {<FormOutlined />} 
+                  onClick={()=>{clickEditButton(t, taches)}}/>}
+
+                {/* input pendant l'édition le tache */}
+                {t.editLabel && <input
+                  placeholder="Edit your TACHE here!"
+                  className = "EditInput"
+                  value={inputTache}
+                  onChange = {e => {setInputTache(e.target.value)}}/>}
+
+                {/* input pendant l'édition le label */}
+                {t.editLabel && <input
+                  placeholder="Edit your LABEL here!"
+                  className = "EditInput"
+                  value={inputLabel}
+                  onChange = {e => {setInputLabel(e.target.value)}}/>}
 
                 {/* button de la confirmation */}
-                {t.editLabel && 
-                  <Button 
-                    onClick = {() => {setTaches(
-                      taches.map(e => (
-                        e.id===t.id ? {
-                          ...e, 
-                          label:inputFunc.split(","), 
-                          editLabel:false}:e
-                      )))
-                    }}
-                  >Confirm</Button>}
+                {t.editLabel && <Button 
+                  onClick = {() => {setTaches(
+                    taches.map(e => (
+                      e.id===t.id ? {
+                        ...e, 
+                        content:inputTache,
+                        label:inputLabel.split(","), 
+                        editLabel:false}:e
+                    )))
+                  }}>Confirm</Button>}
 
                 <DeleteTache list={taches} a = {t}/>
               </Space>
@@ -171,39 +200,31 @@ function PageTache(){
                 <Checkbox
                   className="TacheFini"
                   key={t.id} 
-                  onClick={()=>MoveAToB(tachesFini, taches, t)}>
-                  {t.content}
+                  onClick={()=>MoveAToB(tachesFini, taches, t)}
+                >
+                  {!t.editLabel && t.content}
                 </Checkbox>
 
-                  {/* button pour afficher les labels, clicker pour éditer */}
-                  {!t.editLabel && 
-                    <button 
-                      className="Label"
-                      onClick={()=>{
-                        setInputFunc(t.label.join(","));
-                        setFini(tachesFini.map(e=>(
-                          e.id===t.id ? {...e, editLabel:true}:{...e, editLabel:false}
-                        )))
-                        setTaches(taches.map(e=>(
-                          {...e, editLabel:false}
-                        )))
-                      }}>
-                      <Space>
-                        {t.label.map(l=>(
-                          <div>
-                            [{l}]
-                          </div>
-                        ))}
-                      </Space>
-                    </button>}
+                  {/* afficher les labels */}
+                  {!t.editLabel && afficherLabels({t})}
+
+                  {/* button pour editer */}
+                  {!t.editLabel && <Button icon = {<FormOutlined />} onClick={()=>{clickEditButton(t, tachesFini)}}/>}
+
+                  {/* input pendant l'édition le tache */}
+                  {t.editLabel && <input
+                    placeholder="Edit your TACHE here!"
+                    className = "EditInput"
+                    value={inputTache}
+                    onChange = {e => {setInputTache(e.target.value)}}/>}
 
                   {/* input pendant l'édition des labels */}
                   {t.editLabel && 
                     <input
                       placeholder="Edit your LABEL here!"
-                      className="inputLabel"
-                      value={inputFunc}
-                      onChange = {e => {setInputFunc(e.target.value)}}
+                      className = "EditInput"
+                      value={inputLabel}
+                      onChange = {e => {setInputLabel(e.target.value)}}
                     />}
 
                   {/* button de la confirmation */}
@@ -213,7 +234,8 @@ function PageTache(){
                         tachesFini.map(e => (
                           e.id===t.id ? {
                             ...e, 
-                            label:inputFunc.split(","), 
+                            content:inputTache,
+                            label:inputLabel.split(","), 
                             editLabel:false}:e
                         )))
                       }}
@@ -229,7 +251,6 @@ function PageTache(){
       {/* <p>rander: {i++}</p> */}
     </>
   )
-
 
 }
 
