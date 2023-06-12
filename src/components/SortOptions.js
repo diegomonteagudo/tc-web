@@ -2,37 +2,45 @@ import "./styles.css";
 import { useState } from 'react';
 import { Button, Dropdown } from 'antd';
 
-export default function SortOptions({onUpdateSort}){
-  const [sort, setSort] = useState('Alphabet'); //Sort by 'Alphabet' / 'Creation time' / 'Modification time'
-  const [sortUp, setSortup] = useState(true); //Sort by increase / decrease
+export default function SortOptions({onUpdateSort, onSetSortOption, onSetSortUp}){
+
+  //Sort by 'Alphabet' / 'Creation time' / 'Modification time' / 'Labels'
+  //        'content' / 'createTime' / 'modifyTime' / 'label'
+  const [showSort, setShowSort] = useState('Creation time'); // to show the sort option on the button
+
+  const [sortUp, setSortup] = useState(false); //Sort by increase / decrease
+  
   const items = [
     {
       key: '1',
       label: (<div onClick={()=>{
-        setSort('Alphabet');
-        onUpdateSort(sort, sortUp);
-        console.log('change sort to Alphabet');
+        onSetSortOption('content');
+        setShowSort('Alphabet');
+        onUpdateSort();
       }}>Alphabet</div>),
     },
     {
       key: '2',
       label: (<div onClick={()=>{
-        setSort('Creation time'); 
-        onUpdateSort(sort, sortUp);
+        onSetSortOption('createTime');
+        setShowSort('Creation time'); 
+        onUpdateSort();
       }}>Creation time</div>),
     },
     {
       key: '3',
       label: (<div onClick={()=>{
-        setSort('Modification time'); 
-        onUpdateSort(sort, sortUp);
+        onSetSortOption('modifyTime');
+        setShowSort('Modification time'); 
+        onUpdateSort();
       }}>Modification time</div>),
     },
     {
       key: '4',
       label: (<div onClick={()=>{
-        setSort('Label'); 
-        onUpdateSort(sort, sortUp);
+        onSetSortOption('label');
+        setShowSort('Label'); 
+        onUpdateSort();
       }}>Label</div>),
     },
   ];
@@ -43,11 +51,12 @@ export default function SortOptions({onUpdateSort}){
         menu={{items}}
         trigger={['click']}
       >
-        <Button>Sorted by : {sort}</Button>
+        <Button>Sorted by : {showSort}</Button>
       </Dropdown>
       <Button onClick={()=>{
         setSortup(!sortUp);
-        onUpdateSort(sort, sortUp);
+        onSetSortUp(!sortUp);
+        onUpdateSort();
       }}>
         {sortUp?'Up':'Down'}
       </Button>

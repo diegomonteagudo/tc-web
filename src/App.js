@@ -1,13 +1,15 @@
 import "./styles.css";
 import { useState } from 'react';
-import { EditOutlined, FormOutlined, DeleteOutlined } from '@ant-design/icons';
-import { theme, Input, Button, Checkbox, Space, Collapse, Layout, Menu, Dropdown } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+// import { EditOutlined, FormOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Space, Layout, Menu } from 'antd';
+// import { theme, Input, Button, Checkbox, Space, Collapse, Layout, Menu, Dropdown } from 'antd';
 import InputPart from './components/InputPart.js';
 import SortOptions from './components/SortOptions.js';
 import MyCollapse from './components/myCollapse.js';
 
 
-let tacheId = 0;
+let tacheId = 10;
 // let i = 0;
 
 
@@ -15,6 +17,9 @@ function PageTache(){
 
   const [taches, setTaches] = useState([]);
   const [tachesFini, setFini] = useState([]);
+
+  const [SortOption, setSortOption] = useState('createTime');
+  const [sortUp, setSortup] = useState(false); //Sort by increase / decrease
 
   function Sort(key, sortUp){
     var int = (sortUp === true)?'1':'-1';
@@ -26,60 +31,11 @@ function PageTache(){
     }
     return sortFunc;
   }
-  function updateSort(sortOption, sortUp){
-    var sortBy = '';
-    switch (sortOption){
-      case 'Alphabet':
-        sortBy = 'content';
-        break;
-      case 'Creation time':
-        sortBy = 'createTime';
-        break;
-      case 'Modification time':
-        sortBy = 'modifyTime';
-        break;
-      case 'Label':
-        sortBy = 'label';
-        break;
-      default:
-        break;
-    }
-    setTaches(taches.sort(Sort(sortBy, sortUp))); 
-    setFini(tachesFini.sort(Sort(sortBy, sortUp)))
-  }
 
-  // const [sort, setSort] = useState('Alphabet'); //Sort by 'Alphabet' / 'Creation time' / 'Modification time'
-  // const [sortUp, setSortup] = useState(true); //Sort by increase / decrease
-  // const items = [
-  //   {
-  //     key: '1',
-  //     label: (<div onClick={()=>{
-  //       setSort('Alphabet');
-  //       updateSort(sort);
-  //     }}>Alphabet</div>),
-  //   },
-  //   {
-  //     key: '2',
-  //     label: (<div onClick={()=>{
-  //       setSort('Creation time'); 
-  //       updateSort(sort);
-  //     }}>Creation time</div>),
-  //   },
-  //   {
-  //     key: '3',
-  //     label: (<div onClick={()=>{
-  //       setSort('Modification time'); 
-  //       updateSort(sort);
-  //     }}>Modification time</div>),
-  //   },
-  //   {
-  //     key: '4',
-  //     label: (<div onClick={()=>{
-  //       setSort('Label'); 
-  //       updateSort(sort);
-  //     }}>Label</div>),
-  //   },
-  // ];
+  function updateSort(){
+    setTaches(taches.sort(Sort(SortOption, sortUp))); 
+    setFini(tachesFini.sort(Sort(SortOption, sortUp)))
+  }
 
   function handleAddTache(input, inLabel){
     setTaches([
@@ -100,6 +56,7 @@ function PageTache(){
     return(
       <Button 
         className="deleteButton" icon={<DeleteOutlined />}
+        key={'DeleteButton: '+String(a.id)}
         onClick = {()=>{
           setList(
             List.filter(e=>
@@ -132,16 +89,19 @@ function PageTache(){
   }
 
   function afficherLabels({t}){
+    let i=1
     return(
-      <div className = "Label">
-      <Space>
-        {t.label.map(l=>(
-          <div>
-            [{l}]
-          </div>
-        ))}
+      <Space className = "Label" key={'Labels: '+String(t.id)}>
+        {t.label.map(l=>{
+          i++;
+          return(
+            <div key={'Label['+String(i)+']:'+String(t.id)}>
+              [{l}]
+            </div>
+          )
+        })}
       </Space>
-    </div>)
+    )
   }
 
   function clickEditButton(t, list){
@@ -169,20 +129,11 @@ function PageTache(){
     <>
       <InputPart onAddTache={handleAddTache} />
 
-      {/* <Dropdown
-        menu={{items}}
-        trigger={['click']}
-      >
-        <Button>Sorted by : {sort}</Button>
-      </Dropdown>
-      <Button onClick={()=>{
-        setSortup(!sortUp);
-        updateSort(sort);
-      }}>
-        {sortUp?'Up':'Down'}
-      </Button> */}
-
-      <SortOptions onUpdateSort={updateSort} />
+      <SortOptions 
+        onUpdateSort={updateSort} 
+        onSetSortOption={setSortOption} 
+        onSetSortUp={setSortup}
+      />
 
       <br/><br/>
 
@@ -194,6 +145,8 @@ function PageTache(){
         clickEditButton={clickEditButton}
         onEditTache={handleEdit}
         DeleteButton={DeleteButton}
+        SortOption={[SortOption, sortUp]}
+        Sort={Sort}
       />
 
       {/* <p>rander: {i++}</p> */}

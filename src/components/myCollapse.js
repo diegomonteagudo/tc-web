@@ -10,7 +10,8 @@ export default function MyCollapse({
   afficherLabels, 
   clickEditButton, 
   onEditTache,  
-  DeleteButton
+  DeleteButton, 
+  SortOption, Sort,
 
 }){
 
@@ -32,6 +33,8 @@ export default function MyCollapse({
           clickEditButton={clickEditButton}
           onEditTache={onEditTache}
           DeleteButton={DeleteButton}
+          SortOption={SortOption}
+          Sort={Sort}
         />
       </Panel>
 
@@ -46,6 +49,8 @@ export default function MyCollapse({
           clickEditButton={clickEditButton}
           onEditTache={onEditTache}
           DeleteButton={DeleteButton}
+          SortOption={SortOption}
+          Sort={Sort}
         />
       </Panel>
     </Collapse>

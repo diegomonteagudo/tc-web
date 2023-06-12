@@ -4,12 +4,14 @@
 }
 
 .EditInput{
-  width: 500px;
+  width: 300px;
   padding: 1px 5px;
 }
 .Label{
   margin-left: 100px;
 }
+
+
 
 .deleteTache{
   margin-left: 10px;
@@ -30,6 +32,16 @@
 .circle:hover{
   background-color: #f50303; 
 }
+
+
+
+
+
+
+
+
+
+
 
 li{
   list-style: circle;

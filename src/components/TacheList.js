@@ -9,17 +9,20 @@ export default function TacheList({
   afficherLabels, 
   clickEditButton, 
   onEditTache, 
-  DeleteButton
+  DeleteButton, 
+  SortOption, Sort,
 }){
+
+  taches.sort(Sort(SortOption[0], SortOption[1]))
 
   return(
     <Space direction="vertical">
       {taches.map(t => (
-        <Space>
+        <Space key={t.id} >
           <Checkbox
             checked={Class==='TacheFini'?true:false}
+            key={'TacheContent: '+String(t.id)}
             className={Class}
-            key={t.id} 
             onClick={()=>{onMoveTache(taches, tachesFini, t)}}
           >
             {!t.editLabel && t.content}
@@ -31,25 +34,33 @@ export default function TacheList({
           {/* button pour éditer */}
           {!t.editLabel && <Button 
             icon = {<FormOutlined />} 
-            onClick={()=>{clickEditButton(t, taches)}}/>}
+            onClick={()=>{clickEditButton(t, taches)}}
+            key={'EditButton: '+String(t.id)}
+          />}
 
           {/* input pendant l'édition le tache */}
           {t.editLabel && <input
             placeholder="Edit your TACHE here!"
             className = "EditInput"
             value={t.content}
-            onChange = {e => {onEditTache( taches, {...t, content:e.target.value} )}}/>}
+            onChange = {e => {onEditTache( taches, {...t, content:e.target.value} )}}
+            key={'EditInput_T: '+String(t.id)}
+          />}
 
           {/* input pendant l'édition le label */}
           {t.editLabel && <input
             placeholder="Edit your LABEL here!"
             className = "EditInput"
             value={t.label.join(',')}
-            onChange = {e => {onEditTache( taches, {...t, label:e.target.value.split(',')} )}}/>}
+            onChange = {e => {onEditTache( taches, {...t, label:e.target.value.split(',')} )}}
+            key={'EditInput_L: '+String(t.id)}
+          />}
 
           {/* button de la confirmation */}
           {t.editLabel && <Button 
-            onClick = {() => {onEditTache( taches, {...t, editLabel:false} )}}>Confirm</Button>}
+            onClick = {() => {onEditTache( taches, {...t, editLabel:false} )}}
+            key={'ConfirmButton: '+String(t.id)}
+          >Confirm</Button>}
 
           <DeleteButton list={taches} a = {t}/>
         </Space>
