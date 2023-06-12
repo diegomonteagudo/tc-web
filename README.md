@@ -10,7 +10,7 @@ Pour installer les composants d'Ant Design, execute
 et le paquet des icônes: `npm install --save @ant-design/icons`
 
 
-# Recent Change
+## Recent Change
 ### 12/06:  
 Page des taches: Modifier la partie 'Sort' pour qu'elle fonctionne correctement. 
 
