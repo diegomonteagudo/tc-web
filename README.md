@@ -13,8 +13,8 @@ et le paquet des icônes: `npm install --save @ant-design/icons`
 ## Recent Change
 ### 13/06
 Page des taches:  
-Add the function `Sort by importance`;  
-Move the file `TacheList.js` and `myCollapse.js` to the folder `MyCollapse`
+  Add the function `Sort by importance`;  
+  Move the file `TacheList.js` and `myCollapse.js` to the folder `MyCollapse`
 
 ### 12/06:  
 Page des taches: Modifier la partie `Sort` pour qu'elle fonctionne correctement. 
