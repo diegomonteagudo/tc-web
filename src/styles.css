@@ -1,12 +1,18 @@
+
+.testColor{
+  background: #2069fafa;
+}
+
 .inputLabel{
   margin-left: 100px;
   width: 500px;
 }
 
 .EditInput{
-  width: 300px;
+  width: 30px;
   padding: 1px 5px;
 }
+
 .Label{
   margin-left: 100px;
 }

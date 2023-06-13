@@ -1,12 +1,11 @@
 import "./styles.css";
 import { useState } from 'react';
 import { DeleteOutlined } from '@ant-design/icons';
-// import { EditOutlined, FormOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, Space, Layout, Menu } from 'antd';
 // import { theme, Input, Button, Checkbox, Space, Collapse, Layout, Menu, Dropdown } from 'antd';
 import InputPart from './components/InputPart.js';
 import SortOptions from './components/SortOptions.js';
-import MyCollapse from './components/myCollapse.js';
+import MyCollapse from './components/MyCollapse/myCollapse.js';
 
 
 let tacheId = 10;
@@ -45,6 +44,7 @@ function PageTache(){
         content: input, 
         label: inLabel.split(','), 
         editLabel: false,
+        importance:false,
         createTime: new Date(),
         modifyTime: new Date(),
       }
@@ -77,6 +77,7 @@ function PageTache(){
         content: element.content, 
         label: element.label, 
         editLabel: element.editLabel, 
+        importance:element.importance, 
         createTime: element.createTime,
         modifyTime: new Date(), 
       }
@@ -102,6 +103,12 @@ function PageTache(){
         })}
       </Space>
     )
+  }
+
+  function onImportance(a){
+    setTaches(taches.map(t=>(
+      t.id===a.id ? a:t
+    )))
   }
 
   function clickEditButton(t, list){
@@ -142,6 +149,7 @@ function PageTache(){
         tachesFini={tachesFini}
         onMoveTache={MoveAToB}
         afficherLabels={afficherLabels}
+        onImportance={onImportance}
         clickEditButton={clickEditButton}
         onEditTache={handleEdit}
         DeleteButton={DeleteButton}
