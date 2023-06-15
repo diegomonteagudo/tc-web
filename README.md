@@ -11,6 +11,12 @@ et le paquet des icônes: `npm install --save @ant-design/icons`
 
 
 ## Recent Change
+### 15/06
+Page des taches:  
+* Add the deadline of taches
+* Add ***Sort by deadline***
+* Delete the className of `<Deletebutton/>`
+
 ### 13/06
 Page des taches:  
 * Add the function  ***Sort by importance***;  
