@@ -1,6 +1,10 @@
 import "../styles.css";
-import { FormOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
-import { Button, Checkbox, Space } from 'antd';
+import { FormOutlined, StarOutlined, StarFilled, CalendarOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Space, DatePicker } from 'antd';
+import dayjs from 'dayjs'
+
+
+const dateFormat = 'YYYY/MM/DD';
 
 export default function TacheList({
   taches, tachesFini, 
@@ -14,6 +18,8 @@ export default function TacheList({
   DeleteButton, 
   SortOption, Sort,
 }){
+
+  let deadline = '';
 
   function ImportanceStar({a}){
     return(
@@ -64,6 +70,16 @@ export default function TacheList({
             key={'EditInput_L: '+String(t.id)}
           />}
 
+          {/* Change deadline */}
+          {t.editLabel && <DatePicker 
+            onChange={(_, dateString) => {
+              deadline = dateString
+              onEditTache( taches, {...t, deadline:deadline} )
+            }} 
+            defaultValue={dayjs(t.deadline, dateFormat)} 
+            format={dateFormat}
+          />}
+
           {/* Button Confirmation */}
           {t.editLabel && <Button 
             onClick = {() => {onEditTache( taches, {...t, editLabel:false} )}}
@@ -82,6 +98,10 @@ export default function TacheList({
 
           {/* Delete Button */}
           <DeleteButton list={taches} a = {t}/>
+
+          <br/><br/><br/>
+          {!t.editLabel && <CalendarOutlined />}
+          {!t.editLabel && t.deadline }
 
         </Space>
       ))}

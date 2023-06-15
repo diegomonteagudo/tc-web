@@ -4,8 +4,8 @@ import { Button, Dropdown } from 'antd';
 
 export default function SortOptions({onUpdateSort, onSetSortOption, onSetSortUp}){
 
-  //Sort by 'Alphabet' / 'Creation time' / 'Modification time' / 'Labels'
-  //        'content' / 'createTime' / 'modifyTime' / 'label'
+  //SortOptions: 'Alphabet' / 'Creation time' / 'Modification time' / 'Labels' / 'Deadline'
+  //              'content' / 'createTime' / 'modifyTime' / 'label' / 'deadline'
   const [showSort, setShowSort] = useState('Creation time'); // to show the sort option on the button
 
   const [sortUp, setSortup] = useState(false); //Sort by increase / decrease
@@ -43,6 +43,15 @@ export default function SortOptions({onUpdateSort, onSetSortOption, onSetSortUp}
         onUpdateSort();
       }}>Label</div>),
     },
+    {
+      key: '5',
+      label: (<div onClick={()=>{
+        onSetSortOption('deadline');
+        setShowSort('Deadline'); 
+        onUpdateSort();
+      }}>Deadline</div>),
+    },
+    
   ];
 
   return(

@@ -1,11 +1,12 @@
 import "./styles.css";
 import { useState } from 'react';
 import { EditOutlined } from '@ant-design/icons';
-import { Input, Button } from 'antd';
+import { Input, Button, DatePicker } from 'antd';
 
 export default function InputPart({onAddTache}){
   const [input, setInput] = useState('');
   const [inLabel, setInLabel] = useState('');
+  const [deadline, setDeadline] = useState('');
 
   function EnterButton(){
     if (input !== ''){
@@ -13,7 +14,7 @@ export default function InputPart({onAddTache}){
         <Button 
           type="primary" danger
           onClick={()=>{
-            onAddTache(input, inLabel);
+            onAddTache(input, inLabel, deadline);
             setInput('');
             setInLabel('');
         }}>Add</Button>
@@ -36,6 +37,9 @@ export default function InputPart({onAddTache}){
         prefix={<EditOutlined />}
         onChange={e => setInLabel(e.target.value)}
       />
+
+      <DatePicker onChange={(_, dateString) => setDeadline(dateString)} />
+
       <EnterButton />
     </>
   )

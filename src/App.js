@@ -36,7 +36,7 @@ function PageTache(){
     setFini(tachesFini.sort(Sort(SortOption, sortUp)))
   }
 
-  function handleAddTache(input, inLabel){
+  function handleAddTache(input, inLabel, deadline){
     setTaches([
       ...taches,
       { 
@@ -44,7 +44,8 @@ function PageTache(){
         content: input, 
         label: inLabel.split(','), 
         editLabel: false,
-        importance:false,
+        importance: false,
+        deadline: deadline,
         createTime: new Date(),
         modifyTime: new Date(),
       }
@@ -55,7 +56,8 @@ function PageTache(){
     const [List, setList] = (list===taches)?[taches, setTaches]:[tachesFini, setFini]
     return(
       <Button 
-        className="deleteButton" icon={<DeleteOutlined />}
+        // className="deleteButton" 
+        icon={<DeleteOutlined />}
         key={'DeleteButton: '+String(a.id)}
         onClick = {()=>{
           setList(
