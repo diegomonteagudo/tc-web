@@ -11,6 +11,14 @@ et le paquet des icônes: `npm install --save @ant-design/icons`
 
 
 ## Recent Change
+### 16/06
+Sidebar :
+* Groupes et sous groupes fonctionnels
+* Create new groups
+Page des tâches :
+* Chemin du groupe, infos sur le  groupe
+* Paramètres du groupe (déplacer, supprimer)
+
 ### 15/06
 Page des taches:  
 * Add the deadline of taches
