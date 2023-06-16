@@ -15,6 +15,7 @@ et le paquet des icônes: `npm install --save @ant-design/icons`
 Sidebar :
 * Groupes et sous groupes fonctionnels
 * Create new groups
+
 Page des tâches :
 * Chemin du groupe, infos sur le  groupe
 * Paramètres du groupe (déplacer, supprimer)
