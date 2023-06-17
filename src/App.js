@@ -1,4 +1,3 @@
-import "./App.css";
 import "./styles.css";
 import { useState } from 'react';
 import { EditOutlined, DeleteOutlined, DownOutlined } from '@ant-design/icons';
@@ -12,6 +11,7 @@ const { Panel } = Collapse;
 
 let tacheId = 10;
 let groupId = "100";
+
 // let i = 0;
 
 /**
