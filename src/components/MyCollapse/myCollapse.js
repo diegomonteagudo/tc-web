@@ -14,7 +14,7 @@ export default function MyCollapse({
   onEditTache,  
   DeleteButton, 
   SortOption, Sort,
-
+  activeGroup
 }){
 
   const { token } = theme.useToken();
@@ -38,6 +38,7 @@ export default function MyCollapse({
           DeleteButton={DeleteButton}
           SortOption={SortOption}
           Sort={Sort}
+          activeGroup={activeGroup}
         />
       </Panel>
 
@@ -55,6 +56,7 @@ export default function MyCollapse({
           DeleteButton={DeleteButton}
           SortOption={SortOption}
           Sort={Sort}
+          activeGroup={activeGroup}
         />
       </Panel>
     </Collapse>

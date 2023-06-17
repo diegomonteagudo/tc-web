@@ -17,9 +17,14 @@ export default function TacheList({
   onEditTache, 
   DeleteButton, 
   SortOption, Sort,
+  activeGroup
 }){
 
   let deadline = '';
+  
+  const visibleTasks = activeGroup.id==="z0"?taches:
+  taches.filter(task => activeGroup.attachedLabels.every(
+    label => task.label.includes(label)));
 
   function ImportanceStar({a}){
     return(
@@ -38,7 +43,7 @@ export default function TacheList({
 
   return(
     <Space direction="vertical">
-      {taches.map(t => (
+      {visibleTasks.map(t => (
         <Space key={t.id} >
           <Checkbox
             checked={Class==='TacheFini'?true:false}
