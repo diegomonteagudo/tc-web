@@ -2,13 +2,15 @@ import "./App.css";
 import "./styles.css";
 import { useState } from 'react';
 import { EditOutlined, DeleteOutlined, DownOutlined } from '@ant-design/icons';
-import { theme, Input, Button, Checkbox, Space, Collapse, Layout, Menu, Breadcrumb, Typography, Dropdown } from 'antd';
-
+import { Input, Button, Space, Collapse, Layout, Menu, Breadcrumb, Typography, Dropdown } from 'antd';
+import InputPart from './components/InputPart.js';
+import SortOptions from './components/SortOptions.js';
+import MyCollapse from './components/MyCollapse/myCollapse.js';
 
 const { Panel } = Collapse;
 
 
-let tacheId = 0;
+let tacheId = 10;
 let groupId = "100";
 // let i = 0;
 
@@ -57,7 +59,7 @@ const jsonFlatToMenuStructure = (flatGroups, clickHandler, handlerKeyName) => {
 
 
 function GroupSettings({groups, activeGroup, changeActiveGroup, deleteGroup, addGroup, moveGroup}){
-  if(activeGroup.id=="z0"){
+  if(activeGroup.id==="z0"){
     return(<></>);
   }
 
@@ -68,8 +70,8 @@ function GroupSettings({groups, activeGroup, changeActiveGroup, deleteGroup, add
    */
 
   const groupDescendants = (ancestorID) => {
-    const children = groups.find(group => group.id == ancestorID).childrenGroups;
-    if(children==[]){
+    const children = groups.find(group => group.id === ancestorID).childrenGroups;
+    if(children.length===0){
       return [ancestorID]
     } else {
       return [ancestorID,...children.flatMap(child => groupDescendants(child))]
@@ -90,7 +92,7 @@ function GroupSettings({groups, activeGroup, changeActiveGroup, deleteGroup, add
   const moveGroupFunctionPartial = (groupToMove) => {
     return (
       function moveGroupKnowParent(destinationId){
-        if(destinationId!=activeGroup.parentGroup){
+        if(destinationId!==activeGroup.parentGroup){
           moveGroup(groupToMove, destinationId)
         }
       }
@@ -115,23 +117,23 @@ function GroupSettings({groups, activeGroup, changeActiveGroup, deleteGroup, add
 
   //Pour les boutons sans enfants seulement. Pour les déplacements vers groupes avec sous-groupes, attribut spécial (comme Menu)
   const onClick = ({ key }) => {
-    if (key=='s3') { //supprimer groupe
-      if(activeGroup.parentGroup!=null){
+    if (key==='s3') { //supprimer groupe
+      if(activeGroup.parentGroup!==null){
         changeActiveGroup(activeGroup.parentGroup);
       } else {
         changeActiveGroup("z0");
       }
       deleteGroup([activeGroup.id]);
-    } else if(key=='s4'){ //suprimer groupe et ses descendants
-      if(activeGroup.parentGroup!=null){
+    } else if(key==='s4'){ //suprimer groupe et ses descendants
+      if(activeGroup.parentGroup!==null){
         changeActiveGroup(activeGroup.parentGroup);
       } else {
         changeActiveGroup("z0");
       }
       deleteGroup(activeGroupDescendants.slice().reverse())
-    } else if(key == 's2'){ //move (si la destination est root)
+    } else if(key === 's2'){ //move (si la destination est root)
       moveGroup(activeGroup.id, null)
-    } else if(key != activeGroup.parentGroup) { //move
+    } else if(key !== activeGroup.parentGroup) { //move
       moveGroup(activeGroup.id, key)
     }
   };
@@ -140,12 +142,10 @@ function GroupSettings({groups, activeGroup, changeActiveGroup, deleteGroup, add
     <Space>
       <Typography.Title level={2}>{activeGroup.name}</Typography.Title>
       <Dropdown menu={{ items, onClick }}>
-        <a onClick={(e) => e.preventDefault()}>
           <Space>
             Settings
             <DownOutlined />
           </Space>
-        </a>
       </Dropdown>
     </Space>
   )
@@ -157,11 +157,11 @@ function ActiveGroupPath({groups, activeGroup, changeActiveGroup}){
   }
 
   const constructPath = (currentGroup, list) => {
-    if(currentGroup==null){
+    if(!currentGroup){
       return [{title: 'All', onClick:(() => changeActiveGroup("z0"))},...list]; //le groupe all considéré comme root
     } else {
       const parentID = currentGroup.parentGroup;
-      const newList = list==[]?
+      const newList = list===[]?
       [{title: currentGroup.name, onClick:(() => changeActiveGroup(currentGroup.id))},...list] //les groupes parents sur le chemin
       :[{title: currentGroup.name},...list]; //lorsque le groupe sélectionné est le currentGroup de cette fonction
       return constructPath(groups.find(grp => grp.id===parentID), newList);
@@ -175,225 +175,174 @@ function ActiveGroupPath({groups, activeGroup, changeActiveGroup}){
   )
 }
 
-function PageTache({taches, tachesFini, addTask, deleteTask, changeTask, editStatusSelect, 
+function PageTache({taches, tachesFini, setTaches, setFini, addTask, deleteTask, changeTask, editStatusSelect, 
   activeGroup, groups, changeActiveGroup, deleteGroup, addGroup, moveGroup}){
 
-  const { token } = theme.useToken();
-  const panelStyle = {
-    background: "#f5f1f1fa",
-    borderRadius: token.borderRadiusLG,
-  }
-
-  const [input, setInput] = useState('');
-  const [inLabel, setInLabel] = useState('');
-  //const [taches, setTaches] = useState([]);
-  //const [tachesFini, setFini] = useState([]);
-
-  const [inputFunc, setInputFunc] = useState(''); //utilisé pour l'input pendant l'édition des labels
-
-  const activeLabels = activeGroup.attachedLabels;
-
-  function EnterButton(){
-    if (input !== ''){
+    const [SortOption, setSortOption] = useState('createTime');
+    const [sortUp, setSortup] = useState(false); //Sort by increase / decrease
+  
+    function Sort(key, sortUp){
+      var int = (sortUp === true)?'1':'-1';
+      var sortFunc = function(a, b){
+        if (key === 'label'){
+          return a.label[0]>b.label[0]?int:-int
+        }
+        return a[key]>b[key]?int:-int
+      }
+      return sortFunc;
+    }
+  
+    function updateSort(){
+      setTaches(taches.sort(Sort(SortOption, sortUp))); 
+      setFini(tachesFini.sort(Sort(SortOption, sortUp)))
+    }
+  
+    function handleAddTache(input, inLabel, deadline){
+      let newTaskLabels = inLabel.split(',');
+      if(activeGroup.id!=="z0" && newTaskLabels[0].length>0){
+        newTaskLabels = [...activeGroup.attachedLabels,...newTaskLabels];
+      } else if(activeGroup.id!=="z0"){
+        newTaskLabels = activeGroup.attachedLabels;
+      }
+      setTaches([
+        ...taches,
+        { 
+          id: tacheId++, 
+          content: input, 
+          label: newTaskLabels, 
+          editLabel: false,
+          importance: false,
+          deadline: deadline,
+          createTime: new Date(),
+          modifyTime: new Date(),
+        }
+      ])
+    }
+  
+    function DeleteButton({list, a}){
+      const [List, setList] = (list===taches)?[taches, setTaches]:[tachesFini, setFini]
       return(
         <Button 
-          type="primary" danger
-          onClick={()=>{
-            addTask(true,
-              { 
-                id: tacheId++, 
-                content: input, 
-                label: activeLabels?[...activeLabels,...inLabel.split(',')]:inLabel.split(','), //doublons et vides supprimés dans addTask
-                editLabel: false
-              });
-            setInput('');
-            setInLabel('');
-        }}>Add</Button>
+          // className="deleteButton" 
+          icon={<DeleteOutlined />}
+          key={'DeleteButton: '+String(a.id)}
+          onClick = {()=>{
+            setList(
+              List.filter(e=>
+                e.id !== a.id)
+            )
+          }}
+        />
       )
     }
-    return <Button type="primary" disabled>Add</Button>
-  }
-
-  function DeleteTache({list, a}){
-    const isOngoing = list===taches
+  
+    const MoveAToB = (list_a, list_b, element)=>{
+      const [listA, setListA] = (list_a===taches)?[taches, setTaches]:[tachesFini, setFini]
+      const [listB, setListB] = (list_b===taches)?[taches, setTaches]:[tachesFini, setFini]
+  
+      setListB([
+        ...listB,
+        { id: element.id, 
+          content: element.content, 
+          label: element.label, 
+          editLabel: element.editLabel, 
+          importance:element.importance, 
+          createTime: element.createTime,
+          modifyTime: new Date(), 
+        }
+      ])
+      setListA(
+        listA.filter(e =>
+          e.id !== element.id
+        )
+      )
+    }
+  
+    function afficherLabels({t}){
+      let i=1
+      return(
+        <Space className = "Label" key={'Labels: '+String(t.id)}>
+          {t.label.map(l=>{
+            i++;
+            return(
+              <div key={'Label['+String(i)+']:'+String(t.id)}>
+                [{l}]
+              </div>
+            )
+          })}
+        </Space>
+      )
+    }
+  
+    function onImportance(a){
+      setTaches(taches.map(t=>(
+        t.id===a.id ? a:t
+      )))
+    }
+  
+    function clickEditButton(t, list){
+      const [list1, setList1] = (list===taches)?[taches, setTaches]:[tachesFini, setFini]
+      const [list2, setList2] = (list===tachesFini)?[taches, setTaches]:[tachesFini, setFini]
+      
+      setList1(list1.map(e=>(
+        e.id===t.id ? {...e, editLabel:true}:{...e, editLabel:false}
+      )))
+      setList2(list2.map(e=>(
+        {...e, editLabel:false}
+      )))
+    }
+  
+    function handleEdit(list, e){
+      const setList = (list===taches)?setTaches:setFini
+      setList(list.map(l=>(
+        l.id===e.id?e:l
+      )))
+    }
+  
+  
+  
     return(
-      <Button 
-        className="deleteTache" icon={<DeleteOutlined />}
-        onClick = {()=>{
-          deleteTask(isOngoing, a)
-        }}
-      />
+      <>
+        <ActiveGroupPath groups={groups} activeGroup={activeGroup} changeActiveGroup={changeActiveGroup}/>
+        <GroupSettings
+          groups={groups}
+          activeGroup={activeGroup}
+          changeActiveGroup={changeActiveGroup}
+          deleteGroup={deleteGroup}
+          addGroup={addGroup}
+          moveGroup={moveGroup}/>
+        <LabelListing activeGroup={activeGroup}/>
+
+        <br/><br/><br/>
+
+        <InputPart onAddTache={handleAddTache} />
+  
+        <SortOptions 
+          onUpdateSort={updateSort} 
+          onSetSortOption={setSortOption} 
+          onSetSortUp={setSortup}
+        />
+  
+        <br/><br/>
+  
+        <MyCollapse
+          taches={taches}
+          tachesFini={tachesFini}
+          onMoveTache={MoveAToB}
+          afficherLabels={afficherLabels}
+          onImportance={onImportance}
+          clickEditButton={clickEditButton}
+          onEditTache={handleEdit}
+          DeleteButton={DeleteButton}
+          SortOption={[SortOption, sortUp]}
+          Sort={Sort}
+          activeGroup={activeGroup}
+        />
+  
+        {/* <p>rander: {i++}</p> */}
+      </>
     )
-  }
-
-  const MoveAToB = (list_a, list_b, element)=>{
-    const AisOngoingTasks = list_a===taches;
-    const BisOngoingTasks = list_b===taches;
-
-    addTask(BisOngoingTasks,
-      { id: element.id, content: element.content, label: element.label, editLabel: element.editLabel}
-    );
-
-    deleteTask(AisOngoingTasks, element.id);
-    
-  }
-
-  /**
-   * Filter the tasks by labels
-   * @param listOfTasks list of tasks to check
-   * @param listOfLabels list of every labels the task must have
-   * @returns the tasks that contains every label in listOfLabels
-   */
-  const tasksContainingLabels = (listOfTasks, listOfLabels) =>{
-    return listOfTasks.filter(task => listOfLabels.every(label => task.label.includes(label)));
-  }
-
-
-  return(
-    <>
-    <Space direction="vertical" size="small" style={{ display: 'flex' }}>
-      <ActiveGroupPath groups={groups} activeGroup={activeGroup} changeActiveGroup={changeActiveGroup}/>
-      <GroupSettings
-        groups={groups}
-        activeGroup={activeGroup}
-        changeActiveGroup={changeActiveGroup}
-        deleteGroup={deleteGroup}
-        addGroup={addGroup}
-        moveGroup={moveGroup}/>
-      <LabelListing activeGroup={activeGroup}/>
-      <Input 
-        value={input}
-        placeholder="Enter your TODO here!"
-        prefix={<EditOutlined />}
-        onChange={e => setInput(e.target.value)}
-      />
-      <Input 
-        value={inLabel}
-        placeholder="Enter your LABEL here! (use ',' to seperate your labels)"
-        prefix={<EditOutlined />}
-        onChange={e => setInLabel(e.target.value)}
-      />
-      <EnterButton />
-      <br/>
-
-      <Collapse defaultActiveKey={['1']}>
-        {/*panel pour "Things to do" */}
-        <Panel header="Things to do: " key="1" style={panelStyle}>
-          <Space direction="vertical">
-            {/*displaying every task if group is "ALL TASKS" (id:z0) else only the tasks matching the group's labels*/}
-            {(activeGroup.id=="z0"?taches:tasksContainingLabels(taches, activeLabels)).map(t => (
-              <Space>
-                <Checkbox
-                  key={t.id} 
-                  onClick={()=>MoveAToB(taches, tachesFini, t)}
-                >
-                  {t.content}
-                </Checkbox>
-
-                {/* button pour afficher les labels, clicker pour éditer */}
-                {!t.editLabel && 
-                  <button 
-                    className="Label"
-                    onClick={()=>{
-                      setInputFunc(t.label.join(","));
-                      editStatusSelect(true, t.id)
-                    }}>
-                    <Space>
-                      {t.label.map(l=>(
-                        <div>
-                          [{l}]
-                        </div>
-                      ))}
-                    </Space>
-                  </button>}
-
-                {/* input pendant l'édition des labels */}
-                {t.editLabel && 
-                  <input
-                    placeholder="Edit your LABEL here!"
-                    className="inputLabel"
-                    value={inputFunc}
-                    onChange = {e => {setInputFunc(e.target.value)}}
-                  />}
-
-                {/* button de la confirmation */}
-                {t.editLabel && 
-                  <Button 
-                    onClick = {() => {changeTask(true, t.id, {
-                      ...t, 
-                      label:inputFunc.split(","), 
-                      editLabel:false}
-                      )}}
-                  >Confirm</Button>}
-
-                <DeleteTache list={taches} a = {t.id}/>
-              </Space>
-            ))}
-          </Space>
-        </Panel>
-
-        {/*panel pour "Things have been done" */}
-        <Panel header="Things have been done:" key="2" style={panelStyle}>
-          <Space direction="vertical">
-            {/*displaying every task if group is "ALL TASKS" (id:z0) else only the tasks matching the group's labels*/}
-            {(activeGroup.id=="z0"?tachesFini:tasksContainingLabels(tachesFini, activeLabels)).map(t => (
-              <Space>
-                <Checkbox
-                  className="TacheFini"
-                  key={t.id} 
-                  onClick={()=>MoveAToB(tachesFini, taches, t)}>
-                  {t.content}
-                </Checkbox>
-
-                  {/* button pour afficher les labels, clicker pour éditer */}
-                  {!t.editLabel && 
-                    <button 
-                      className="Label"
-                      onClick={()=>{
-                        setInputFunc(t.label.join(","));
-                        editStatusSelect(false, t.id)
-                      }}>
-                      <Space>
-                        {t.label.map(l=>(
-                          <div>
-                            [{l}]
-                          </div>
-                        ))}
-                      </Space>
-                    </button>}
-
-                  {/* input pendant l'édition des labels */}
-                  {t.editLabel && 
-                    <input
-                      placeholder="Edit your LABEL here!"
-                      className="inputLabel"
-                      value={inputFunc}
-                      onChange = {e => {setInputFunc(e.target.value)}}
-                    />}
-
-                  {/* button de la confirmation */}
-                  {t.editLabel && 
-                    <Button 
-                      onClick = {() => {changeTask(false, t.id,
-                        {...t, 
-                          label:inputFunc.split(","), 
-                            editLabel:false}
-                      )}}
-                    >Confirm</Button>}
-
-                  <DeleteTache list={tachesFini} a = {t.id}/>
-              </Space>
-            ))}
-          </Space>
-        </Panel>
-      </Collapse>
-
-      {/* <p>rander: {i++}</p> */}
-      </Space>
-    </>
-  )
-
-
+  
 }
 
 function LabelListing({activeGroup}){
@@ -514,7 +463,7 @@ export default function TodoGlobal(){
 
   const changeActiveGroup = (groupId) => {
     console.log(groupId);
-    if(groupId=="z0"){
+    if(groupId==="z0"){
       setActiveGroup({id:"z0", name:"ALL TASKS"});
     } else {
       setActiveGroup(getGroupFromID(groupId));
@@ -578,10 +527,10 @@ export default function TodoGlobal(){
       const childrenGroupsID = groupToDelete.childrenGroups;
       tempGroup = tempGroup.filter(group => group.id!==id);
       //if no parents and no children : just delete from groups
-      if(parentGroupID == null && childrenGroupsID.length==0){
+      if(parentGroupID === null && childrenGroupsID.length===0){
         //nothing, already removed
       //if no children : remove ID from parent's children list
-      } else if(childrenGroupsID.length==0){
+      } else if(childrenGroupsID.length===0){
         tempGroup = tempGroup.map(group => {
           if(group.id===parentGroupID){
             return {...group,childrenGroups:group.childrenGroups.filter(grp => grp !== id)};
@@ -590,7 +539,7 @@ export default function TodoGlobal(){
           }
         })
       //if no parents : set children's parent to null (root)
-      } else if(parentGroupID == null){
+      } else if(parentGroupID === null){
         tempGroup = tempGroup.map(group => {
           if(childrenGroupsID.includes(group.id)){
             return {...group,parentGroup:null};
@@ -618,67 +567,6 @@ export default function TodoGlobal(){
     setGroups(tempGroup);
   }
 
-  /**
-   * Move a group AND its children into another group (or make it top level)
-   * @param id ID of the group to move along its children
-   * @param newParent Id of the parent to move the group into ("null" if top level)
-   */
-  function moveGroup(groupToMoveID, newParentID){
-    const groupToMove = getGroupFromID(groupToMoveID);
-    if(groupToMove.parentGroup != null){
-      const oldParent = getGroupFromID(groupToMove.parentGroup);
-      const newParent = getGroupFromID(newParentID);
-      changeGroup([oldParent.id,newParentID,groupToMoveID], [{
-        id:oldParent.id,
-        name:oldParent.name,
-        attachedLabels:oldParent.attachedLabels,
-        parentGroup:oldParent.parentGroup,
-        childrenGroups:oldParent.childrenGroups.filter(childID => childID != groupToMoveID)
-      },{
-        id:newParent.id,
-        name:newParent.name,
-        attachedLabels:newParent.attachedLabels,
-        parentGroup:newParent.parentGroup,
-        childrenGroups:[...newParent.childrenGroups,groupToMoveID]
-      },{
-        id:groupToMoveID,
-        name:groupToMove.name,
-        attachedLabels:groupToMove.attachedLabels,
-        parentGroup:newParentID,
-        childrenGroups:groupToMove.childrenGroups
-      }])
-    } else if (newParentID!=null){
-      const newParent = getGroupFromID(newParentID);
-      changeGroup([newParentID,groupToMoveID], [{
-        id:newParent.id,
-        name:newParent.name,
-        attachedLabels:newParent.attachedLabels,
-        parentGroup:newParent.parentGroup,
-        childrenGroups:[...newParent.childrenGroups,groupToMoveID]
-      },{
-        id:groupToMoveID,
-        name:groupToMove.name,
-        attachedLabels:groupToMove.attachedLabels,
-        parentGroup:newParentID,
-        childrenGroups:groupToMove.childrenGroups
-      }])
-    } else if(groupToMove.parentGroup != null){
-      const oldParent = getGroupFromID(groupToMove.parentGroup);
-      changeGroup([oldParent.id,groupToMoveID], [{
-        id:oldParent.id,
-        name:oldParent.name,
-        attachedLabels:oldParent.attachedLabels,
-        parentGroup:oldParent.parentGroup,
-        childrenGroups:oldParent.childrenGroups.filter(childID => childID != groupToMoveID)
-      },{
-        id:groupToMoveID,
-        name:groupToMove.name,
-        attachedLabels:groupToMove.attachedLabels,
-        parentGroup:newParentID,
-        childrenGroups:groupToMove.childrenGroups
-      }])
-    }
-  }
 
   /**
    * Move a group AND its children into another group (or make it top level)
@@ -687,7 +575,7 @@ export default function TodoGlobal(){
    */
   function moveGroup(groupToMoveID, newParentID){
     const groupToMove = getGroupFromID(groupToMoveID);
-    if(newParentID!=null && groupToMove.parentGroup != null){
+    if(newParentID!==null && groupToMove.parentGroup !== null){
       const oldParent = getGroupFromID(groupToMove.parentGroup);
       const newParent = getGroupFromID(newParentID);
       changeGroup([oldParent.id,newParentID,groupToMoveID], [{
@@ -695,7 +583,7 @@ export default function TodoGlobal(){
         name:oldParent.name,
         attachedLabels:oldParent.attachedLabels,
         parentGroup:oldParent.parentGroup,
-        childrenGroups:oldParent.childrenGroups.filter(childID => childID != groupToMoveID)
+        childrenGroups:oldParent.childrenGroups.filter(childID => childID !== groupToMoveID)
       },{
         id:newParent.id,
         name:newParent.name,
@@ -709,7 +597,7 @@ export default function TodoGlobal(){
         parentGroup:newParentID,
         childrenGroups:groupToMove.childrenGroups
       }])
-    } else if (newParentID!=null){
+    } else if (newParentID!==null){
       const newParent = getGroupFromID(newParentID);
       changeGroup([newParentID,groupToMoveID], [{
         id:newParent.id,
@@ -724,14 +612,14 @@ export default function TodoGlobal(){
         parentGroup:newParentID,
         childrenGroups:groupToMove.childrenGroups
       }])
-    } else if(groupToMove.parentGroup != null){
+    } else if(groupToMove.parentGroup !== null){
       const oldParent = getGroupFromID(groupToMove.parentGroup);
       changeGroup([oldParent.id,groupToMoveID], [{
         id:oldParent.id,
         name:oldParent.name,
         attachedLabels:oldParent.attachedLabels,
         parentGroup:oldParent.parentGroup,
-        childrenGroups:oldParent.childrenGroups.filter(childID => childID != groupToMoveID)
+        childrenGroups:oldParent.childrenGroups.filter(childID => childID !== groupToMoveID)
       },{
         id:groupToMoveID,
         name:groupToMove.name,
@@ -762,7 +650,7 @@ export default function TodoGlobal(){
    */
   function addTask(isOngoing, newTask){
     const [liste, setListe] = getNeededStates(isOngoing);
-    newTask.label = newTask.label.filter(label => label != '');
+    newTask.label = newTask.label.filter(label => label !== '');
     newTask.label = [...new Set(newTask.label)];
     setListe([...liste, newTask]);
   }
@@ -814,7 +702,9 @@ export default function TodoGlobal(){
           </Sider>
           <Content><PageTache 
             taches={taches} 
-            tachesFini={tachesFini} 
+            tachesFini={tachesFini}
+            setTaches={setTaches}
+            setFini={setFini}
             addTask={addTask}
             deleteTask={deleteTask}
             changeTask={changeTask}
@@ -830,3 +720,5 @@ export default function TodoGlobal(){
     </Layout>
   )
 }
+
+

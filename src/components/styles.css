@@ -1,25 +1,17 @@
-
-.testColor{
-  background: #2069fafa;
-}
-
 .inputLabel{
   margin-left: 100px;
   width: 500px;
 }
 
 .EditInput{
-  width: 30px;
+  width: 300px;
   padding: 1px 5px;
 }
-
 .Label{
   margin-left: 100px;
 }
 
-
-
-.deleteTache{
+.deleteButton{
   margin-left: 10px;
 }
 
@@ -38,16 +30,6 @@
 .circle:hover{
   background-color: #f50303; 
 }
-
-
-
-
-
-
-
-
-
-
 
 li{
   list-style: circle;
