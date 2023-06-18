@@ -15,7 +15,7 @@ et le paquet des icônes: `npm install --save @ant-design/icons`
 - React router DOM : 
 - page principale + conteneur login
 - ajouter le répertoire pour back-end
-- ajouter `` dans le fichier ***src/package.json***
+- ajouter `"proxy":"http://localhost:3001"` dans le fichier ***src/package.json***
 
 ### 16/06
 Sidebar :
