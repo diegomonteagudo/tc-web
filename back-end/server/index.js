@@ -2,15 +2,12 @@
 
 // pour activer le MongoDB, exécuter  `mongod.exe --dbpath d:\mangoData\db -auth` dans `D:\Program Files\MongoDB\Server\6.0\bin>`
 
-var express = require("express"); //加载express构造函数
+var express = require("express"); //Charger express
 
 const PORT = process.env.PORT || 3001;
 
-var app = express(); //生成创建服务的实例
-var bodyParser = require("body-parser");//获取post请求参数
-
-// const registerRouter = express.Router();
-
+var app = express(); 
+var bodyParser = require("body-parser");
 
 const name = 'ghoti';
 const password = 'guichijin';
@@ -21,20 +18,11 @@ const uri = `mongodb://${name}:${password}@${host}:${port}/?authMechanism=DEFAUL
 // const uri = 'mongodb://ghoti:guichijin@127.0.0.1:27017/?authMechanism=DEFAULT&authSource=admin'
 
 
-app.use(express.static("statics"));//指定资源路径
- 
-app.use(bodyParser.json());//处理以json格式的提交
-app.use(bodyParser.urlencoded({//处理以form表单的提交
+app.use(express.static("statics"));
+app.use(bodyParser.json());// Traitement des soumissions au format json
+app.use(bodyParser.urlencoded({// Traitement des soumissions de formulaires
 	extended: false
 }))
-
-// app.use((req,res,next)=>{
-//   console.log("有人请求服务器")
-//   next()
-// })
-// app.use('/register', registerRouter);
-
-
 
 const mongoose = require('mongoose');
 
@@ -80,19 +68,9 @@ async function AddToDB(req, res){
   // res.send('Tache recorded. ');
 }
 
-app.use("/api", function(req, res){//这里res和req对象是由express封装过的了
-  // AddToDB(req, res);
+app.use("/api", function(req, res){
+  AddToDB(req, res);
 })
-
-
-
-// app.post("/register", function(req, res){
-// 	console.log('received message: ', req.body)//请求的参数对象
-// 	res.json({//给前端返回json格式的数据
-// 		code: 0,
-// 		msg: "登录成功"
-// 	})
-// })
  
 
 app.listen(PORT, ()=>{
