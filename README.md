@@ -14,6 +14,8 @@ et le paquet des icônes: `npm install --save @ant-design/icons`
 ### 18/06
 React router DOM : 
 page principale + conteneur login
+ajouter le répertoire pour back-end
+ajouter ``
 
 ### 16/06
 Sidebar :
