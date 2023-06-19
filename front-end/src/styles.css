@@ -1,0 +1,159 @@
+
+.testColor{
+  background: #2069fafa;
+}
+
+.inputLabel{
+  margin-left: 100px;
+  width: 500px;
+}
+
+.EditInput{
+  width: 30px;
+  padding: 1px 5px;
+}
+
+.Label{
+  margin-left: 100px;
+}
+
+
+
+.deleteTache{
+  margin-left: 0px;
+}
+
+.panelStyle{
+  background: #f5f1f1fa;
+}
+
+.TacheFini{
+  text-decoration: line-through;
+}
+
+.circle{
+  border-radius:10px
+}
+
+.circle:hover{
+  background-color: #f50303; 
+}
+
+
+
+
+
+
+
+
+
+
+
+li{
+  list-style: circle;
+}
+
+li::marker{
+  font-size:40px;
+  vertical-align: bottom;
+  margin-bottom: 500px;
+}
+
+.li-content{
+  margin-left: -30px;
+  font-size: 20px;
+  vertical-align: middle;
+  margin-bottom: 50px;
+} */
+
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 20px;
+  padding: 0;
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 22px;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+h3 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+h4 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+h5 {
+  margin-top: 0;
+  font-size: 14px;
+}
+
+h6 {
+  margin-top: 0;
+  font-size: 12px;
+}
+
+code {
+  font-size: 1.2em;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 20px;
+  padding: 0;
+}
+
+.square {
+  background: #fff;
+  border: 1px solid #999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.board-row:after {
+  clear: both;
+  content: '';
+  display: table;
+}
+
+.status {
+  margin-bottom: 10px;
+}
+.game {
+  display: flex;
+  flex-direction: row;
+}
+
+.game-info {
+  margin-left: 20px;
+}
